@@ -96,3 +96,6 @@ html,body,#root{height:100%;height:100dvh;overflow:hidden;overscroll-behavior-y:
 :root[data-theme="dark"] .archive-swipe-wrap:not(:last-child)::after{background:#292e29}
 
 .archive-card{max-height:calc(100dvh - 445px - var(--safe-top) - var(--safe-bottom))}
+
+/* Keep the tab bar anchored to the device viewport in installed iOS PWAs. */
+.app-shell{-webkit-overflow-scrolling:auto}

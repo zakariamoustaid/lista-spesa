@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Archive, ArrowLeft, Check, CheckCircle2, ChevronRight, Circle, List, Moon, Plus, Search, ShoppingBasket, Sun, X } from 'lucide-react'
 import { loadData, saveData, type Data, type Product } from './storage'
 
@@ -78,7 +79,7 @@ export default function App() {
     change(d => ({ ...d, list: [] })); setShopping(false); setTab('list'); setToast(null)
   }
 
-  return <main className={`app-shell ${shopping ? 'shopping-mode' : ''}`}>
+  return <><main className={`app-shell ${shopping ? 'shopping-mode' : ''}`}>
     {shopping ? <>
       <header className="shop-header"><button className="icon-btn back" aria-label="Torna alla lista" onClick={() => setShopping(false)}><ArrowLeft /></button><div><span className="eyebrow">LA MIA SPESA</span><h1>Al supermercato</h1></div><button className="theme-toggle" aria-label={theme === 'dark' ? 'Attiva modalità giorno' : 'Attiva modalità notte'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? <Sun size={19}/> : <Moon size={19}/>}</button></header>
       <section className="progress-card" aria-label="Avanzamento spesa"><div className="progress-copy"><strong>{bought.length} di {entries.length} prodotti acquistati</strong><span>{percent}%</span></div><div className="progress-track"><div className="progress-fill" style={{ width: `${percent}%` }}/></div></section>
@@ -104,12 +105,11 @@ export default function App() {
         <div className="section-heading products-heading"><div><h2>Il tuo archivio</h2><span>Scorri a destra per modificare, a sinistra per eliminare</span></div><span className="count-pill">{filteredProducts.length}</span></div>
         {filteredProducts.length === 0 ? <Empty icon={<Archive/>} title={products.length ? 'Nessun risultato' : 'Ancora nessun prodotto'} body={products.length ? 'Prova con un altro nome.' : 'Aggiungi i prodotti che compri più spesso.'} /> : <div className="list-card archive-card">{filteredProducts.map(p => <ArchiveSwipeRow key={p.id} product={p} onEdit={() => editProduct(p)} onDelete={() => deleteProduct(p)} />)}</div>}
       </>}
-      <nav className="bottom-nav" aria-label="Navigazione principale"><button className={tab === 'list' ? 'active' : ''} onClick={() => setTab('list')}><List size={21}/><span>Lista</span></button><button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}><Archive size={21}/><span>Prodotti</span></button></nav>
     </>}
     {sheet && <div className="sheet-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setSheet(false) }}><section className="add-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div className="sheet-handle"/><div className="sheet-header"><div><span className="eyebrow">IL TUO ARCHIVIO</span><h2 id="sheet-title">Aggiungi prodotti</h2></div><button className="close-sheet" onClick={() => setSheet(false)} aria-label="Chiudi"><X/></button></div><div className="search-field sheet-search"><Search size={18}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cerca un prodotto" aria-label="Cerca un prodotto"/>{query && <button onClick={() => setQuery('')} aria-label="Cancella ricerca"><X size={17}/></button>}</div><div className="sheet-list">{filteredProducts.length ? filteredProducts.map(p => { const added = entries.some(e => e.productId === p.id); return <button className={`sheet-product ${added ? 'is-added' : ''}`} key={p.id} disabled={added} onClick={() => addItem(p.id)}><span>{p.name}</span>{added ? <span className="added-label"><Check size={15}/> Aggiunto</span> : <Plus size={19}/>}</button> }) : <Empty icon={<Archive/>} title={products.length ? 'Nessun risultato' : 'Archivio vuoto'} body={products.length ? 'Prova con un altro nome.' : 'Crea prima i tuoi prodotti nella sezione Prodotti.'} />}</div><div className="sheet-footer"><button className="primary-btn" onClick={() => setSheet(false)}>Fatto</button></div></section></div>}
     {toast && <div className="toast" role="status"><span className="toast-check"><Check size={15}/></span><span>Prodotto aggiunto al carrello</span><button onClick={undo}>Annulla</button></div>}
     {notice && <div className="notice" role="status">{notice}</div>}
-  </main>
+  </main>{!shopping && createPortal(<nav className="bottom-nav" aria-label="Navigazione principale"><button className={tab === 'list' ? 'active' : ''} onClick={() => setTab('list')}><List size={21}/><span>Lista</span></button><button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}><Archive size={21}/><span>Prodotti</span></button></nav>, document.body)}</>
 }
 
 function Empty({ icon, title, body, action }: { icon: React.ReactNode; title: string; body: string; action?: React.ReactNode }) {
