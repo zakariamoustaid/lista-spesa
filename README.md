@@ -24,6 +24,16 @@ npm run preview
 
 La build produce i file statici in `dist/`. Per eseguire i test delle funzioni di persistenza: `npm test`.
 
+## Pubblicazione su GitHub Pages
+
+Il repository `lista-spesa` è configurato per pubblicare automaticamente il sito con GitHub Actions quando viene aggiornato il branch `main`. Il workflow sostituisce il controllo Deno iniziale con `npm ci`, `npm test`, `npm run build` e la pubblicazione della cartella `dist/`.
+
+Per attivare Pages, nelle impostazioni del repository aprire **Settings → Pages** e selezionare **GitHub Actions** come sorgente di pubblicazione. Poi inviare le modifiche al branch `main`; lo stato e l’URL sono visibili nella scheda **Actions**. Per questo repository l’indirizzo atteso è `https://zakariamoustaid.github.io/lista-spesa/`.
+
+La configurazione usa il percorso `/lista-spesa/` solo durante la build GitHub Actions; `npm run dev` e le build locali continuano a funzionare da `/`.
+
+**Visibilità:** GitHub Pages è pubblico anche se il repository sorgente è privato, salvo configurazioni GitHub Enterprise specifiche. Il sito non contiene autenticazione. I dati della spesa restano nel LocalStorage del browser e non vengono sincronizzati tra dispositivi, ma chiunque raggiunga il sito può usare la propria copia dell’app. Se serve limitare chi può aprire il sito, usare un hosting con controllo accessi.
+
 ## Test e installazione su iPhone
 
 Safari su iPhone può raggiungere il server di sviluppo usando l’indirizzo IP locale, ma una pagina servita via HTTP da un IP di rete non è un contesto sicuro: non fare affidamento su Service Worker, installazione PWA o funzionamento offline in questa modalità. `localhost` è considerato sicuro solo sul dispositivo stesso, non quando il server gira su un computer diverso.
